@@ -22,7 +22,7 @@ public class ResourceUIController : MonoBehaviour
 
     void UpdateUI()
     {
-        duckText.text = $"🦆 Ducks: {ResourceManager.Instance.ducks}";
-        buckText.text = $"💰 Bucks: {ResourceManager.Instance.bucks}";
+        duckText.text = $"Ducks: {ResourceManager.Instance.ducks}";
+        buckText.text = $"Bucks: {ResourceManager.Instance.bucks}";
     }
 }
