@@ -6,13 +6,6 @@ public class SaveManager : MonoBehaviour
     private const string SaveFileName = "save.json";
     private string SavePath => Path.Combine(Application.persistentDataPath, SaveFileName);
 
-    [System.Serializable]
-    private class SaveData
-    {
-        public int ducks;
-        public int bucks;
-    }
-
     private void Start()
     {
         Load();
@@ -35,6 +28,7 @@ public class SaveManager : MonoBehaviour
         {
             ducks = ResourceManager.Instance.ducks,
             bucks = ResourceManager.Instance.bucks
+            // sellingUnlocked 先不管，不写也没关系（默认 false）
         };
 
         string json = JsonUtility.ToJson(data, true);
@@ -64,7 +58,6 @@ public class SaveManager : MonoBehaviour
         ResourceManager.Instance.bucks = Mathf.Max(0, data.bucks);
 
         ResourceManager.Instance.OnDuckCountChanged?.Invoke();
-
         Debug.Log("Loaded save.");
     }
 
