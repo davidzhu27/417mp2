@@ -16,6 +16,11 @@ public class SaveManager : MonoBehaviour
         Save();
     }
 
+    private void OnDisable()
+    {
+        Save();
+    }
+
     public void Save()
     {
         if (ResourceManager.Instance == null)
@@ -28,7 +33,6 @@ public class SaveManager : MonoBehaviour
         {
             ducks = ResourceManager.Instance.ducks,
             bucks = ResourceManager.Instance.bucks
-            // sellingUnlocked 先不管，不写也没关系（默认 false）
         };
 
         string json = JsonUtility.ToJson(data, true);
