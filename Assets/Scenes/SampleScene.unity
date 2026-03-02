@@ -1549,7 +1549,6 @@ GameObject:
   - component: {fileID: 282182767}
   - component: {fileID: 282182766}
   - component: {fileID: 282182765}
-  - component: {fileID: 282182764}
   m_Layer: 5
   m_Name: AutoSellerButton
   m_TagString: Untagged
@@ -1577,19 +1576,6 @@ RectTransform:
   m_AnchoredPosition: {x: 252, y: 91.99998}
   m_SizeDelta: {x: 300, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &282182764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 282182762}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0282d1dee564314cbe6e46239c59751, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DuckBreederPurchase
-  cost: 20
 --- !u!114 &282182765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4357,7 +4343,6 @@ GameObject:
   - component: {fileID: 2126730483}
   - component: {fileID: 2126730482}
   - component: {fileID: 2126730481}
-  - component: {fileID: 2126730480}
   m_Layer: 5
   m_Name: DuckBreederButton
   m_TagString: Untagged
@@ -4385,19 +4370,6 @@ RectTransform:
   m_AnchoredPosition: {x: 249, y: 271}
   m_SizeDelta: {x: 300, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2126730480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126730478}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0282d1dee564314cbe6e46239c59751, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DuckBreederPurchase
-  cost: 20
 --- !u!114 &2126730481
 MonoBehaviour:
   m_ObjectHideFlags: 0
