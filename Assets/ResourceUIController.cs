@@ -1,27 +1,28 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Text;
 
 public class ResourceUIController : MonoBehaviour
 {
     [Header("Text")]
     public TextMeshProUGUI duckText;
     public TextMeshProUGUI buckText;
+    public TextMeshProUGUI genInfoText;
 
     [Header("Unlock Buttons")]
     public GameObject duckBreederButton;
     public GameObject autoSellerButton;
     public GameObject duckSellingButton;
+    public GameObject generatorMultiplierButton;
 
     [Header("Unlock Thresholds")]
-    public int duckBreederUnlockCost = 20;
     public int autoSellerUnlockCost = 20;
     public int duckSellingUnlockCost = 40;
 
     [Header("Systems")]
     public ConveyorSystem conveyorSystem;
 
-    private bool duckBreederUnlocked = false;
     private bool autoSellerUnlocked = false;
     private bool duckSellingUnlocked = false;
 
@@ -31,6 +32,7 @@ public class ResourceUIController : MonoBehaviour
         InitLockedButton(duckBreederButton);
         InitLockedButton(autoSellerButton);
         InitLockedButton(duckSellingButton);
+        InitLockedButton(generatorMultiplierButton);
 
         UpdateUI();
 
@@ -65,6 +67,11 @@ public class ResourceUIController : MonoBehaviour
     {
         duckText.text = $"Ducks: {ResourceManager.Instance.ducks}";
         buckText.text = $"Bucks: {ResourceManager.Instance.bucks}";
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"Ducks/sec: {ResourceManager.Instance.GetDucksPerSecond():F2}");
+        sb.AppendLine($"Generators (+{ResourceManager.Instance.generatorRate}/s): {ResourceManager.Instance.generators}");
+        sb.AppendLine($"Multipliers (+{ResourceManager.Instance.multiplierEffect * 100}%): {ResourceManager.Instance.multipliers}");
+        genInfoText.text = sb.ToString();
     }
 
     // =============================
@@ -72,11 +79,11 @@ public class ResourceUIController : MonoBehaviour
     // =============================
     void HandleUnlocks()
     {
-        if (!duckBreederUnlocked &&
-            ResourceManager.Instance.ducks >= duckBreederUnlockCost)
+        if (ResourceManager.Instance.ducks >= ResourceManager.Instance.GetNextGeneratorPrice())
         {
-            duckBreederUnlocked = true;
             UnlockButton(duckBreederButton);
+        } else {
+            LockButton(duckBreederButton);
         }
 
         if (!autoSellerUnlocked &&
@@ -92,6 +99,14 @@ public class ResourceUIController : MonoBehaviour
             duckSellingUnlocked = true;
             UnlockButton(duckSellingButton);
         }
+
+        if (ResourceManager.Instance.generators >= 1 &&
+            ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextMultiplierPrice())
+        {
+            UnlockButton(generatorMultiplierButton);
+        } else {
+            LockButton(generatorMultiplierButton);
+        }
     }
 
     void InitLockedButton(GameObject buttonObj)
@@ -100,6 +115,18 @@ public class ResourceUIController : MonoBehaviour
 
         var button = buttonObj.GetComponent<Button>();
         var image = buttonObj.GetComponent<Image>();
+
+        button.interactable = false;
+        image.color = new Color(0.6f, 0.6f, 0.6f, 0.6f);
+    }
+
+    void LockButton(GameObject buttonObj)
+    {
+        if (buttonObj == null) return;
+
+        var button = buttonObj.GetComponent<Button>();
+        var image = buttonObj.GetComponent<Image>();
+        var text = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
 
         button.interactable = false;
         image.color = new Color(0.6f, 0.6f, 0.6f, 0.6f);
@@ -116,7 +143,7 @@ public class ResourceUIController : MonoBehaviour
         button.interactable = true;
         image.color = Color.white;
 
-        text.text = text.text.Replace("(Unlocks", "Cost");
+        text.text = text.text.Replace("Unlocks", "Cost");
     }
 
     // =============================
@@ -125,13 +152,14 @@ public class ResourceUIController : MonoBehaviour
 
     public void PurchaseDuckBreeder()
     {
-        if (!duckBreederUnlocked) return;
-        if (ResourceManager.Instance.ducks < duckBreederUnlockCost) return;
+        if (ResourceManager.Instance.ducks < ResourceManager.Instance.GetNextGeneratorPrice()) return;
 
-        ResourceManager.Instance.duckBreedingUnlocked = true;
-        ResourceManager.Instance.ducksPerSecond = 0.33f; // ~1 duck / 3 sec
+        ResourceManager.Instance.PurchaseGenerator();
 
-        duckBreederButton.SetActive(false);
+        // update duckBreederButton with new price
+        var text = duckBreederButton.GetComponentInChildren<TextMeshProUGUI>();
+        int nextPrice = ResourceManager.Instance.GetNextGeneratorPrice();
+        text.text = $"Duck Science (Cost: {nextPrice} Ducks)";
     }
 
     public void PurchaseAutoSeller()
@@ -152,5 +180,18 @@ public class ResourceUIController : MonoBehaviour
         conveyorSystem.duckSellingUnlocked = true;
 
         duckSellingButton.SetActive(false);
+    }
+
+    public void PurchaseGeneratorMultiplier()
+    {
+        if (ResourceManager.Instance.generators < 1) return;
+        if (ResourceManager.Instance.bucks < ResourceManager.Instance.GetNextMultiplierPrice()) return;
+
+        ResourceManager.Instance.PurchaseMultiplier();
+
+        // update generatorMultiplierButton with new price
+        var text = generatorMultiplierButton.GetComponentInChildren<TextMeshProUGUI>();
+        int nextPrice = ResourceManager.Instance.GetNextMultiplierPrice();
+        text.text = $"Generator Multiplier (Cost: {nextPrice} Bucks)";
     }
 }
