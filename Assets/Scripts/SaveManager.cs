@@ -72,8 +72,9 @@ public class SaveManager : MonoBehaviour
 
         Debug.Log($"Idle progress: +{gained} ducks over {dt} seconds.");
 
-        ResourceManager.Instance.OnDuckCountChanged?.Invoke();
-        Debug.Log("Loaded save.");
+        ResourceManager.Instance.OnDuckCountChanged?.Invoke(ResourceManager.Instance.ducks);
+ResourceManager.Instance.OnBuckCountChanged?.Invoke(ResourceManager.Instance.bucks);
+Debug.Log("Loaded save.");
     }
 
     public void DeleteSave()

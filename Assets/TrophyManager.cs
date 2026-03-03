@@ -18,14 +18,20 @@ public class TrophyManager : MonoBehaviour
     {
         CheckAndSpawn();
 
+        // Trophies are based on BUCKS, so listen to bucks changes.
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnDuckCountChanged += CheckAndSpawn;
+            ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
     }
 
     private void OnDestroy()
     {
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnDuckCountChanged -= CheckAndSpawn;
+            ResourceManager.Instance.OnBuckCountChanged -= OnBucksChanged;
+    }
+
+    private void OnBucksChanged(int _)
+    {
+        CheckAndSpawn();
     }
 
     private void CheckAndSpawn()
