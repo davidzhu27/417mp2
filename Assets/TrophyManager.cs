@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class TrophyManager : MonoBehaviour
 {
+    // Saved flags (persist via SaveManager)
+    public static bool Spawned500;
+    public static bool Spawned1000;
+    public static bool Spawned1000000;
+
     public GameObject trophy500Prefab;
     public GameObject trophy1000Prefab;
     public GameObject trophy1000000Prefab;
@@ -10,15 +15,11 @@ public class TrophyManager : MonoBehaviour
     public Transform spawn1000;
     public Transform spawn1000000;
 
-    private bool spawned500;
-    private bool spawned1000;
-    private bool spawned1000000;
-
     private void Start()
     {
         CheckAndSpawn();
 
-        // Trophies are based on BUCKS, so listen to bucks changes.
+        // Trophies are based on BUCKS
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
     }
@@ -40,22 +41,22 @@ public class TrophyManager : MonoBehaviour
 
         int bucks = ResourceManager.Instance.bucks;
 
-        if (!spawned500 && bucks >= 500)
+        if (!Spawned500 && bucks >= 500)
         {
             Spawn(trophy500Prefab, spawn500, "Trophy_500");
-            spawned500 = true;
+            Spawned500 = true;
         }
 
-        if (!spawned1000 && bucks >= 1000)
+        if (!Spawned1000 && bucks >= 1000)
         {
             Spawn(trophy1000Prefab, spawn1000, "Trophy_1000");
-            spawned1000 = true;
+            Spawned1000 = true;
         }
 
-        if (!spawned1000000 && bucks >= 1000000)
+        if (!Spawned1000000 && bucks >= 1000000)
         {
             Spawn(trophy1000000Prefab, spawn1000000, "Trophy_1000000");
-            spawned1000000 = true;
+            Spawned1000000 = true;
         }
     }
 
