@@ -14,10 +14,15 @@ public class ResourceManager : MonoBehaviour
     public float multiplierEffect = 0.5f;
     private float duckAccumulator = 0f;
 
+    // Existing events (keep for compatibility with existing scripts)
     public System.Action OnDuckCountIncreased;
     public System.Action OnDuckCountDecreased;
     public System.Action OnBucksIncreased;
     public System.Action OnBucksDecreased;
+
+    // NEW: unified "changed" events expected by SaveManager / TrophyManager / UI
+    public System.Action<int> OnDuckCountChanged;
+    public System.Action<int> OnBuckCountChanged;
 
     public float GetDucksPerSecond()
     {
@@ -32,10 +37,22 @@ public class ResourceManager : MonoBehaviour
             Destroy(gameObject);
     }
 
+    private void NotifyDuckChanged()
+    {
+        OnDuckCountChanged?.Invoke(ducks);
+    }
+
+    private void NotifyBuckChanged()
+    {
+        OnBuckCountChanged?.Invoke(bucks);
+    }
+
     public void AddDucks(int amount)
     {
         ducks += amount;
+
         OnDuckCountIncreased?.Invoke();
+        NotifyDuckChanged();
     }
 
     public void SellDucks(int amount)
@@ -46,8 +63,11 @@ public class ResourceManager : MonoBehaviour
         ducks -= amount;
         ducks = Mathf.Max(ducks, 0);
         OnDuckCountDecreased?.Invoke();
+        NotifyDuckChanged();
+
         bucks += amount;
         OnBucksIncreased?.Invoke();
+        NotifyBuckChanged();
     }
 
     public void PurchaseGenerator()
@@ -55,9 +75,11 @@ public class ResourceManager : MonoBehaviour
         int price = GetNextGeneratorPrice();
         if (ducks < price)
             return;
+
         ducks -= price;
         generators++;
         OnDuckCountDecreased?.Invoke();
+        NotifyDuckChanged();
     }
 
     public int GetNextGeneratorPrice()
@@ -70,9 +92,11 @@ public class ResourceManager : MonoBehaviour
         int price = GetNextMultiplierPrice();
         if (bucks < price)
             return;
+
         bucks -= price;
         multipliers++;
         OnBucksDecreased?.Invoke();
+        NotifyBuckChanged();
     }
 
     public int GetNextMultiplierPrice()
