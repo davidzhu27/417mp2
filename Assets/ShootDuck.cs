@@ -5,6 +5,7 @@ public class DuckButtShooter : MonoBehaviour
 {
     [Header("Input")]
     public InputActionReference action;   // assign Left Primary Button here
+    public InputActionReference debugAction;
 
     [Header("Duck Production")]
     public int ducksPerShot = 1;
@@ -23,11 +24,15 @@ public class DuckButtShooter : MonoBehaviour
     {
         action.action.Enable();
         action.action.performed += OnShoot;
+
+        debugAction.action.Enable();
+        debugAction.action.performed += OnDebugShoot;
     }
 
     void OnDestroy()
     {
         action.action.performed -= OnShoot;
+        debugAction.action.performed -= OnDebugShoot;
     }
 
     private void OnShoot(InputAction.CallbackContext ctx)
@@ -61,5 +66,10 @@ public class DuckButtShooter : MonoBehaviour
                 rb.AddForce(buttShootPoint.forward * shootForce, ForceMode.Impulse);
             }
         }
+    }
+
+    private void OnDebugShoot(InputAction.CallbackContext ctx)
+    {
+        ResourceManager.Instance.AddDucks(5);
     }
 }

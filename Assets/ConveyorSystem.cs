@@ -5,58 +5,180 @@ using System.Collections.Generic;
 
 public class ConveyorSystem : MonoBehaviour
 {
+    [Header("Unlocking")]
+    public bool duckSellingUnlocked = false;
+
     [Header("Belt Setup")]
     public GameObject beltPrefab;
-    public int initialBeltCount = 3;
+    public int initialBeltCount = 2;
     public float beltStepLength = 1.0f;
 
     [Header("Spawn / Despawn")]
     public Transform spawnPoint;
     public Transform despawnPoint;
 
-    [Header("Roll Animation")]
+    [Header("Manual Step Animation")]
     public float rollDuration = 0.4f;
 
     [Header("Input")]
     public InputActionReference stepAction;
 
+    [Header("Auto Seller")]
+    public bool autoSellerActive = false;
+
+    [Header("Continuous Roll")]
+    public float autoRollSpeed = 1.0f; // units per second
+
     private List<GameObject> belts = new List<GameObject>();
+    private HashSet<GameObject> beltsSpawnedThisAction = new HashSet<GameObject>();
     private bool isRolling = false;
 
     void Start()
     {
         SpawnInitialBelts();
-    
+
         stepAction.action.Enable();
         stepAction.action.performed += OnStepPressed;
-        ResourceManager.Instance.OnDuckCountChanged += TryAutoFillBelts;
+
+        ResourceManager.Instance.OnDuckCountIncreased += TryAutoFillBelts;
     }
 
     void OnDestroy()
     {
         stepAction.action.performed -= OnStepPressed;
+
         if (ResourceManager.Instance != null)
+            ResourceManager.Instance.OnDuckCountIncreased -= TryAutoFillBelts;
+    }
+
+    // ===============================
+    // UPDATE (AUTO MODE ONLY)
+    // ===============================
+
+    void Update()
+    {
+        if (!duckSellingUnlocked || !autoSellerActive || isRolling)
+            return;
+
+        beltsSpawnedThisAction.Clear();
+        float delta = autoRollSpeed * Time.deltaTime;
+        MoveBelts(delta);
+    }
+
+    // ===============================
+    // INPUT (MANUAL MODE ONLY)
+    // ===============================
+
+    void OnStepPressed(InputAction.CallbackContext ctx)
+    {
+        if (!duckSellingUnlocked || autoSellerActive || isRolling)
+            return;
+
+        StartCoroutine(RollConveyorStep());
+    }
+
+    // ===============================
+    // MANUAL STEP ANIMATION
+    // ===============================
+
+    IEnumerator RollConveyorStep()
+    {
+        isRolling = true;
+        beltsSpawnedThisAction.Clear();
+
+        float elapsed = 0f;
+        while (elapsed < rollDuration)
         {
-            ResourceManager.Instance.OnDuckCountChanged -= TryAutoFillBelts;
+            float nextElapsed = Mathf.Min(elapsed + Time.deltaTime, rollDuration);
+            float stepDelta = beltStepLength * (nextElapsed - elapsed) / rollDuration;
+
+            MoveBelts(stepDelta);
+
+            elapsed = nextElapsed;
+            yield return null;
+        }
+
+        isRolling = false;
+    }
+
+    // ===============================
+    // MOVEMENT CORE
+    // ===============================
+
+    void MoveBelts(float delta)
+    {
+        float despawnX = despawnPoint.position.x;
+        Vector3 right = Vector3.right * delta;
+
+        // Move all belts that were not spawned during this action
+        foreach (GameObject belt in belts)
+        {
+            if (beltsSpawnedThisAction.Contains(belt))
+                continue;
+            belt.transform.position += right;
+        }
+
+        // Despawn any belt past the despawn point and spawn a new one at spawn (new one does not move this action)
+        for (int i = belts.Count - 1; i >= 0; i--)
+        {
+            if (belts[i].transform.position.x < despawnX)
+                continue;
+
+            ConveyorBeltSlot slot = belts[i].GetComponent<ConveyorBeltSlot>();
+            if (slot != null)
+            {
+                int sold = slot.SellAll();
+                ResourceManager.Instance.SellDucks(sold);
+            }
+
+            Destroy(belts[i]);
+            belts.RemoveAt(i);
+
+            GameObject newBelt = Instantiate(beltPrefab, spawnPoint.position, spawnPoint.rotation, transform);
+            ConveyorBeltSlot newSlot = newBelt.GetComponent<ConveyorBeltSlot>();
+            if (newSlot != null)
+                newSlot.AutoFill();
+
+            belts.Add(newBelt);
+            beltsSpawnedThisAction.Add(newBelt);
+
+            TryAutoFillBelts();
         }
     }
 
+    // ===============================
+    // AUTO-FILL
+    // ===============================
+
     void TryAutoFillBelts()
     {
-        // Belts are ordered back → front
         foreach (GameObject belt in belts)
         {
             ConveyorBeltSlot slot = belt.GetComponent<ConveyorBeltSlot>();
             if (slot == null)
-                continue;
-
-            if (!slot.IsFull() && ResourceManager.Instance.ducks > 0)
             {
-                slot.AutoFill();
-                break; // only fill ONE belt per duck increment
+                Debug.Log($"Belt at position x = {belt.transform.position.x:F2} has no ConveyorBeltSlot.");
+                continue;
             }
+
+            float x = belt.transform.position.x;
+            if (slot.IsFull())
+            {
+                Debug.Log($"Belt at position x = {x:F2} is full.");
+                continue;
+            }
+            if (ResourceManager.Instance.ducks <= 0)
+            {
+                Debug.Log($"Belt at position x = {x:F2} is not full but no ducks available.");
+                continue;
+            }
+
+            Debug.Log($"Belt at position x = {x:F2} auto-filled.");
+            slot.AutoFill();
+            break;
         }
     }
+
     // ===============================
     // INITIALIZATION
     // ===============================
@@ -64,117 +186,18 @@ public class ConveyorSystem : MonoBehaviour
     void SpawnInitialBelts()
     {
         belts.Clear();
+        beltsSpawnedThisAction.Clear();
 
         for (int i = 0; i < initialBeltCount; i++)
         {
-            Vector3 pos = spawnPoint.position
-                        - Vector3.right * beltStepLength * i;
+            Vector3 pos = spawnPoint.position - Vector3.right * beltStepLength * i;
+            GameObject belt = Instantiate(beltPrefab, pos, spawnPoint.rotation, transform);
 
-            GameObject belt = Instantiate(
-                beltPrefab,
-                pos,
-                spawnPoint.rotation,
-                transform
-            );
             ConveyorBeltSlot slot = belt.GetComponent<ConveyorBeltSlot>();
             if (slot != null)
-            {
                 slot.AutoFill();
-            }
+
             belts.Add(belt);
         }
-    }
-
-    // ===============================
-    // INPUT
-    // ===============================
-
-    void OnStepPressed(InputAction.CallbackContext ctx)
-    {
-        if (!isRolling)
-            StartCoroutine(RollConveyor());
-    }
-
-    // ===============================
-    // CORE LOGIC
-    // ===============================
-
-    IEnumerator RollConveyor()
-    {
-        isRolling = true;
-
-        Vector3 startOffset = Vector3.zero;
-        Vector3 endOffset = Vector3.right * beltStepLength;
-
-        float t = 0f;
-
-        // Cache start positions
-        Dictionary<GameObject, Vector3> startPositions = new Dictionary<GameObject, Vector3>();
-        foreach (GameObject belt in belts)
-            startPositions[belt] = belt.transform.position;
-
-        // Smooth roll animation
-        while (t < rollDuration)
-        {
-            float alpha = t / rollDuration;
-            Vector3 offset = Vector3.Lerp(startOffset, endOffset, alpha);
-
-            foreach (GameObject belt in belts)
-            {
-                belt.transform.position = startPositions[belt] + offset;
-            }
-
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        // Snap exactly to final position
-        foreach (GameObject belt in belts)
-        {
-            belt.transform.position = startPositions[belt] + endOffset;
-        }
-
-        HandleDespawnAndSpawn();
-
-        isRolling = false;
-    }
-
-    void HandleDespawnAndSpawn()
-    {
-        for (int i = belts.Count - 1; i >= 0; i--)
-        {
-            if (belts[i].transform.position.x >= despawnPoint.position.x)
-            {
-                ConveyorBeltSlot slot = belts[i].GetComponent<ConveyorBeltSlot>();
-                if (slot != null)
-                {
-                    int sold = slot.SellAll();
-                    ResourceManager.Instance.SellDucks(sold);
-                }
-
-                Destroy(belts[i]);
-                belts.RemoveAt(i);
-
-                SpawnNewBelt();
-            }
-        }
-    }
-
-    void SpawnNewBelt()
-    {
-        GameObject newBelt = Instantiate(
-            beltPrefab,
-            spawnPoint.position,
-            spawnPoint.rotation,
-            transform
-        );
-
-        ConveyorBeltSlot slot = newBelt.GetComponent<ConveyorBeltSlot>();
-        if (slot != null)
-        {
-            slot.AutoFill();
-        }
-
-        belts.Add(newBelt);
     }
 }
