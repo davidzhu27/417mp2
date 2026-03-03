@@ -65,3 +65,7 @@ crashlytics-build.properties
 # > 100MB
 *.dylib
 ArtifactDB/
+
+# macOS
+.DS_Store
+**/.DS_Store
