@@ -10,8 +10,14 @@ public class ResourceManager : MonoBehaviour
     public bool duckSellingUnlocked = false;
     public int generators = 0;
     public int multipliers = 0;
+    public int hlg1 = 0;
+    public int hlg2 = 0;
+    public int hlg3 = 0;
     public float generatorRate = 0.2f;
     public float multiplierEffect = 0.5f;
+    public float hlg1Effect = 100f;
+    public float hlg2Effect = 500f;
+    public float hlg3Effect = 2500f;
     private float duckAccumulator = 0f;
 
     // Existing events (keep for compatibility with existing scripts)
@@ -103,6 +109,45 @@ public class ResourceManager : MonoBehaviour
     {
         // use an exponential price increase for multipliers
         return 200 * (int)Mathf.Pow(2, multipliers);
+    }
+
+    public void PurchaseHLG(int hlgNumber)
+    {
+        int price = GetNextHLGPrice(hlgNumber);
+        if (bucks < price)
+            return;
+        bucks -= price;
+
+        switch (hlgNumber)
+        {
+            case 1:
+                hlg1++;
+                OnBucksDecreased?.Invoke();
+                break;
+            case 2:
+                hlg2++;
+                OnBucksDecreased?.Invoke();
+                break;
+            case 3:
+                hlg3++;
+                OnBucksDecreased?.Invoke();
+                break;
+        }
+    }
+
+    public int GetNextHLGPrice(int hlgNumber)
+    {
+        switch (hlgNumber)
+        {
+            case 1:
+                return 1000 * (int)Mathf.Pow(2, hlg1);
+            case 2:
+                return 5000 * (int)Mathf.Pow(2, hlg2);
+            case 3:
+                return 25000 * (int)Mathf.Pow(2, hlg3);
+            default:
+                return int.MaxValue;
+        }
     }
 
     void Update()
