@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TrophyManager : MonoBehaviour
@@ -15,19 +16,26 @@ public class TrophyManager : MonoBehaviour
     public Transform spawn1000;
     public Transform spawn1000000;
 
-    private void Start()
+    private void OnEnable()
     {
-        CheckAndSpawn();
-
-        // Trophies are based on BUCKS
+        // subscribe as early as possible
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
+
+        // run an initial check after one frame so ResourceManager is definitely initialized
+        StartCoroutine(CheckNextFrame());
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.OnBuckCountChanged -= OnBucksChanged;
+    }
+
+    private IEnumerator CheckNextFrame()
+    {
+        yield return null;
+        CheckAndSpawn();
     }
 
     private void OnBucksChanged(int _)
@@ -40,6 +48,8 @@ public class TrophyManager : MonoBehaviour
         if (ResourceManager.Instance == null) return;
 
         int bucks = ResourceManager.Instance.bucks;
+
+        Debug.Log($"[TrophyManager] bucks={bucks}, flags: 500={Spawned500}, 1000={Spawned1000}, 1M={Spawned1000000}");
 
         if (!Spawned500 && bucks >= 500)
         {
@@ -74,6 +84,18 @@ public class TrophyManager : MonoBehaviour
         GameObject obj = Instantiate(prefab, pos, rot);
         obj.name = name;
 
-        Debug.Log($"Spawned {name}");
+        Debug.Log($"Spawned {name} at {pos}");
+    }
+
+    // ===== TEST HELPERS =====
+    // 右键组件标题就能点：Reset Trophy Flags（只用于测试）
+    [ContextMenu("Reset Trophy Flags")]
+    public void ResetTrophyFlags()
+    {
+        Spawned500 = false;
+        Spawned1000 = false;
+        Spawned1000000 = false;
+        Debug.Log("Trophy flags reset.");
+        CheckAndSpawn();
     }
 }
