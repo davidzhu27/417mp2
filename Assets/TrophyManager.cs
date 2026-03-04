@@ -16,11 +16,12 @@ public class TrophyManager : MonoBehaviour
     public Transform spawn1000;
     public Transform spawn1000000;
 
+    private bool _subscribedToBucks;
+
     private void OnEnable()
     {
         // subscribe as early as possible
-        if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
+        TrySubscribeToBucks();
 
         // run an initial check after one frame so ResourceManager is definitely initialized
         StartCoroutine(CheckNextFrame());
@@ -28,14 +29,28 @@ public class TrophyManager : MonoBehaviour
 
     private void OnDisable()
     {
-        if (ResourceManager.Instance != null)
+        if (_subscribedToBucks && ResourceManager.Instance != null)
+        {
             ResourceManager.Instance.OnBuckCountChanged -= OnBucksChanged;
+            _subscribedToBucks = false;
+        }
     }
 
     private IEnumerator CheckNextFrame()
     {
         yield return null;
+        // In case ResourceManager was created after OnEnable
+        TrySubscribeToBucks();
         CheckAndSpawn();
+    }
+
+    private void TrySubscribeToBucks()
+    {
+        if (_subscribedToBucks) return;
+        if (ResourceManager.Instance == null) return;
+
+        ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
+        _subscribedToBucks = true;
     }
 
     private void OnBucksChanged(int _)
@@ -51,21 +66,25 @@ public class TrophyManager : MonoBehaviour
 
         Debug.Log($"[TrophyManager] bucks={bucks}, flags: 500={Spawned500}, 1000={Spawned1000}, 1M={Spawned1000000}");
 
-        if (!Spawned500 && bucks >= 500)
+        bool has500Trophy = GameObject.Find("Trophy_Bronze") != null;
+        bool has1000Trophy = GameObject.Find("Trophy_Silver") != null;
+        bool has1MTrophy = GameObject.Find("Trophy_Gold") != null;
+
+        if ((bucks >= 500 || Spawned500) && !has500Trophy)
         {
-            Spawn(trophy500Prefab, spawn500, "Trophy_500");
+            Spawn(trophy500Prefab, spawn500, "Trophy_Bronze");
             Spawned500 = true;
         }
 
-        if (!Spawned1000 && bucks >= 1000)
+        if ((bucks >= 1000 || Spawned1000) && !has1000Trophy)
         {
-            Spawn(trophy1000Prefab, spawn1000, "Trophy_1000");
+            Spawn(trophy1000Prefab, spawn1000, "Trophy_Silver");
             Spawned1000 = true;
         }
 
-        if (!Spawned1000000 && bucks >= 1000000)
+        if ((bucks >= 1000000 || Spawned1000000) && !has1MTrophy)
         {
-            Spawn(trophy1000000Prefab, spawn1000000, "Trophy_1000000");
+            Spawn(trophy1000000Prefab, spawn1000000, "Trophy_Gold");
             Spawned1000000 = true;
         }
     }
@@ -83,6 +102,11 @@ public class TrophyManager : MonoBehaviour
 
         GameObject obj = Instantiate(prefab, pos, rot);
         obj.name = name;
+
+        if (spawnPoint != null)
+        {
+            obj.transform.localScale = spawnPoint.localScale;
+        }
 
         Debug.Log($"Spawned {name} at {pos}");
     }

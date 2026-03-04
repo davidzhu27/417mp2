@@ -164,7 +164,6 @@ public class ConveyorSystem : MonoBehaviour
             float x = belt.transform.position.x;
             if (slot.IsFull())
             {
-                Debug.Log($"Belt at position x = {x:F2} is full.");
                 continue;
             }
             if (ResourceManager.Instance.ducks <= 0)
@@ -173,7 +172,6 @@ public class ConveyorSystem : MonoBehaviour
                 continue;
             }
 
-            Debug.Log($"Belt at position x = {x:F2} auto-filled.");
             slot.AutoFill();
             break;
         }
