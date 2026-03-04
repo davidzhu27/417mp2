@@ -15,6 +15,9 @@ public class ResourceUIController : MonoBehaviour
     public GameObject autoSellerButton;
     public GameObject duckSellingButton;
     public GameObject generatorMultiplierButton;
+    public GameObject hlg1;
+    public GameObject hlg2;
+    public GameObject hlg3;
 
     [Header("Unlock Thresholds")]
     public int autoSellerUnlockCost = 20;
@@ -33,6 +36,9 @@ public class ResourceUIController : MonoBehaviour
         InitLockedButton(autoSellerButton);
         InitLockedButton(duckSellingButton);
         InitLockedButton(generatorMultiplierButton);
+        InitLockedButton(hlg1);
+        InitLockedButton(hlg2);
+        InitLockedButton(hlg3);
 
         UpdateUI();
 
@@ -106,6 +112,27 @@ public class ResourceUIController : MonoBehaviour
             UnlockButton(generatorMultiplierButton);
         } else {
             LockButton(generatorMultiplierButton);
+        }
+
+        if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(1))
+        {
+            UnlockButton(hlg1);
+        } else {
+            LockButton(hlg1);
+        }
+
+        if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(2))
+        {
+            UnlockButton(hlg2);
+        } else {
+            LockButton(hlg2);
+        }
+
+        if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(3))
+        {
+            UnlockButton(hlg3);
+        } else {
+            LockButton(hlg3);
         }
     }
 
@@ -193,5 +220,28 @@ public class ResourceUIController : MonoBehaviour
         var text = generatorMultiplierButton.GetComponentInChildren<TextMeshProUGUI>();
         int nextPrice = ResourceManager.Instance.GetNextMultiplierPrice();
         text.text = $"Generator Multiplier (Cost: {nextPrice} Bucks)";
+    }
+
+    public void PurchaseHLG(int level)
+    {
+        int price = ResourceManager.Instance.GetNextHLGPrice(level);
+        if (ResourceManager.Instance.bucks < price) return;
+
+        ResourceManager.Instance.PurchaseHLG(level);
+
+        // update button text with new price
+        GameObject buttonObj = null;
+        switch (level)
+        {
+            case 1: buttonObj = hlg1; break;
+            case 2: buttonObj = hlg2; break;
+            case 3: buttonObj = hlg3; break;
+        }
+        if (buttonObj != null)
+        {
+            var text = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+            int nextPrice = ResourceManager.Instance.GetNextHLGPrice(level);
+            text.text = $"High Level Generator {level} (Cost: {nextPrice} Bucks)";
+        }
     }
 }
