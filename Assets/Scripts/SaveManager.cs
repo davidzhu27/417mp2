@@ -103,8 +103,8 @@ public class SaveManager : MonoBehaviour
         Debug.Log($"Idle progress: +{gained} ducks over {dt} seconds.");
 
         // Notify UI/systems (your ResourceManager events are Action<int>)
-        ResourceManager.Instance.OnDuckCountChanged?.Invoke(ResourceManager.Instance.ducks);
-        ResourceManager.Instance.OnBuckCountChanged?.Invoke(ResourceManager.Instance.bucks);
+        ResourceManager.Instance.OnDuckCountChanged?.Invoke();
+        ResourceManager.Instance.OnBucksChanged?.Invoke();
 
         Debug.Log("Loaded save.");
     }

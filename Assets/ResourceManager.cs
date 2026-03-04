@@ -21,18 +21,15 @@ public class ResourceManager : MonoBehaviour
     private float duckAccumulator = 0f;
 
     // Existing events (keep for compatibility with existing scripts)
-    public System.Action OnDuckCountIncreased;
-    public System.Action OnDuckCountDecreased;
-    public System.Action OnBucksIncreased;
-    public System.Action OnBucksDecreased;
-
-    // NEW: unified "changed" events expected by SaveManager / TrophyManager / UI
-    public System.Action<int> OnDuckCountChanged;
-    public System.Action<int> OnBuckCountChanged;
+    public System.Action OnDuckCountChanged;
+    public System.Action OnBucksChanged;
 
     public float GetDucksPerSecond()
     {
-        return generators * generatorRate * (1 + multipliers * multiplierEffect);
+        float baseRate = generators * generatorRate;
+        float multiplier = 1f + (multipliers * multiplierEffect);
+        float hlgBonus = (hlg1 * hlg1Effect) + (hlg2 * hlg2Effect) + (hlg3 * hlg3Effect);
+        return baseRate * multiplier + hlgBonus;
     }
 
     void Awake()
@@ -43,22 +40,11 @@ public class ResourceManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void NotifyDuckChanged()
-    {
-        OnDuckCountChanged?.Invoke(ducks);
-    }
-
-    private void NotifyBuckChanged()
-    {
-        OnBuckCountChanged?.Invoke(bucks);
-    }
-
     public void AddDucks(int amount)
     {
         ducks += amount;
 
-        OnDuckCountIncreased?.Invoke();
-        NotifyDuckChanged();
+        OnDuckCountChanged?.Invoke();
     }
 
     public void SellDucks(int amount)
@@ -68,12 +54,10 @@ public class ResourceManager : MonoBehaviour
 
         ducks -= amount;
         ducks = Mathf.Max(ducks, 0);
-        OnDuckCountDecreased?.Invoke();
-        NotifyDuckChanged();
+        OnDuckCountChanged?.Invoke();
 
         bucks += amount;
-        OnBucksIncreased?.Invoke();
-        NotifyBuckChanged();
+        OnBucksChanged?.Invoke();
     }
 
     public void PurchaseGenerator()
@@ -84,8 +68,7 @@ public class ResourceManager : MonoBehaviour
 
         ducks -= price;
         generators++;
-        OnDuckCountDecreased?.Invoke();
-        NotifyDuckChanged();
+        OnDuckCountChanged?.Invoke();
     }
 
     public int GetNextGeneratorPrice()
@@ -101,8 +84,7 @@ public class ResourceManager : MonoBehaviour
 
         bucks -= price;
         multipliers++;
-        OnBucksDecreased?.Invoke();
-        NotifyBuckChanged();
+        OnBucksChanged?.Invoke();
     }
 
     public int GetNextMultiplierPrice()
@@ -122,15 +104,15 @@ public class ResourceManager : MonoBehaviour
         {
             case 1:
                 hlg1++;
-                OnBucksDecreased?.Invoke();
+                OnBucksChanged?.Invoke();
                 break;
             case 2:
                 hlg2++;
-                OnBucksDecreased?.Invoke();
+                OnBucksChanged?.Invoke();
                 break;
             case 3:
                 hlg3++;
-                OnBucksDecreased?.Invoke();
+                OnBucksChanged?.Invoke();
                 break;
         }
     }

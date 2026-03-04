@@ -9,6 +9,7 @@ public class DuckButtShooter : MonoBehaviour
 
     [Header("Duck Production")]
     public int ducksPerShot = 1;
+    public int ducksPerShotDebug = 5;
     public float shootCooldown = 0.3f;
 
     [Header("Duck Spawn")]
@@ -70,6 +71,6 @@ public class DuckButtShooter : MonoBehaviour
 
     private void OnDebugShoot(InputAction.CallbackContext ctx)
     {
-        ResourceManager.Instance.AddDucks(5);
+        ResourceManager.Instance.AddDucks(ducksPerShotDebug);
     }
 }

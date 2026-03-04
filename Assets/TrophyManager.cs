@@ -31,7 +31,7 @@ public class TrophyManager : MonoBehaviour
     {
         if (_subscribedToBucks && ResourceManager.Instance != null)
         {
-            ResourceManager.Instance.OnBuckCountChanged -= OnBucksChanged;
+            ResourceManager.Instance.OnBucksChanged -= OnBucksChanged;
             _subscribedToBucks = false;
         }
     }
@@ -49,11 +49,11 @@ public class TrophyManager : MonoBehaviour
         if (_subscribedToBucks) return;
         if (ResourceManager.Instance == null) return;
 
-        ResourceManager.Instance.OnBuckCountChanged += OnBucksChanged;
+        ResourceManager.Instance.OnBucksChanged += OnBucksChanged;
         _subscribedToBucks = true;
     }
 
-    private void OnBucksChanged(int _)
+    private void OnBucksChanged()
     {
         CheckAndSpawn();
     }

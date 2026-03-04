@@ -1469,6 +1469,7 @@ MonoBehaviour:
   action: {fileID: -1644001223835636349, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
   debugAction: {fileID: 11711766586467970, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
   ducksPerShot: 1
+  ducksPerShotDebug: 1000
   shootCooldown: 0.3
   smallDuckPrefab: {fileID: 5775343476657490613, guid: 3ee5ec44cd8dfab429c794f753ce1e98, type: 3}
   buttShootPoint: {fileID: 1533785375}
@@ -1709,9 +1710,9 @@ MonoBehaviour:
   autoSellerButton: {fileID: 282182762}
   duckSellingButton: {fileID: 2070865841}
   generatorMultiplierButton: {fileID: 430747102}
-  hlg1: {fileID: 0}
-  hlg2: {fileID: 0}
-  hlg3: {fileID: 0}
+  hlg1: {fileID: 605783628}
+  hlg2: {fileID: 2022057919}
+  hlg3: {fileID: 818904529}
   autoSellerUnlockCost: 20
   duckSellingUnlockCost: 40
   conveyorSystem: {fileID: 208773954}

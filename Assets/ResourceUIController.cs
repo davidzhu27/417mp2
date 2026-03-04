@@ -41,20 +41,19 @@ public class ResourceUIController : MonoBehaviour
         InitLockedButton(hlg3);
 
         UpdateUI();
+        HandleUnlocks();
 
-        ResourceManager.Instance.OnDuckCountIncreased += OnResourcesChanged;
-        ResourceManager.Instance.OnDuckCountDecreased += OnResourcesChanged;
-        ResourceManager.Instance.OnBucksIncreased += OnResourcesChanged;
-        ResourceManager.Instance.OnBucksDecreased += OnResourcesChanged;
+        ResourceManager.Instance.OnDuckCountChanged += OnResourcesChanged;
+        ResourceManager.Instance.OnBucksChanged += OnResourcesChanged;
     }
 
     void OnDestroy()
     {
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnDuckCountIncreased -= OnResourcesChanged;
-            ResourceManager.Instance.OnDuckCountDecreased -= OnResourcesChanged;
-            ResourceManager.Instance.OnBucksIncreased -= OnResourcesChanged;
-            ResourceManager.Instance.OnBucksDecreased -= OnResourcesChanged;
+        {
+            ResourceManager.Instance.OnDuckCountChanged -= OnResourcesChanged;
+            ResourceManager.Instance.OnBucksChanged -= OnResourcesChanged;
+        }
     }
 
     // =============================

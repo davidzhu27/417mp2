@@ -40,7 +40,7 @@ public class ConveyorSystem : MonoBehaviour
         stepAction.action.Enable();
         stepAction.action.performed += OnStepPressed;
 
-        ResourceManager.Instance.OnDuckCountIncreased += TryAutoFillBelts;
+        ResourceManager.Instance.OnDuckCountChanged += TryAutoFillBelts;
     }
 
     void OnDestroy()
@@ -48,7 +48,7 @@ public class ConveyorSystem : MonoBehaviour
         stepAction.action.performed -= OnStepPressed;
 
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnDuckCountIncreased -= TryAutoFillBelts;
+            ResourceManager.Instance.OnDuckCountChanged -= TryAutoFillBelts;
     }
 
     // ===============================
