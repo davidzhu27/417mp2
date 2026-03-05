@@ -70,19 +70,19 @@ public class TrophyManager : MonoBehaviour
         bool has1000Trophy = GameObject.Find("Trophy_Silver") != null;
         bool has1MTrophy = GameObject.Find("Trophy_Gold") != null;
 
-        if ((bucks >= 500 || Spawned500) && !has500Trophy)
+        if ((bucks >= 50 || Spawned500) && !has500Trophy)
         {
             Spawn(trophy500Prefab, spawn500, "Trophy_Bronze");
             Spawned500 = true;
         }
 
-        if ((bucks >= 1000 || Spawned1000) && !has1000Trophy)
+        if ((bucks >= 100 || Spawned1000) && !has1000Trophy)
         {
             Spawn(trophy1000Prefab, spawn1000, "Trophy_Silver");
             Spawned1000 = true;
         }
 
-        if ((bucks >= 1000000 || Spawned1000000) && !has1MTrophy)
+        if ((bucks >= 1000 || Spawned1000000) && !has1MTrophy)
         {
             Spawn(trophy1000000Prefab, spawn1000000, "Trophy_Gold");
             Spawned1000000 = true;

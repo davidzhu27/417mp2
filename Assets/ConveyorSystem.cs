@@ -28,7 +28,7 @@ public class ConveyorSystem : MonoBehaviour
 
     [Header("Continuous Roll")]
     public float autoRollSpeed = 1.0f; // units per second
-    public int nextUpgradePrice = 100;
+    public float nextUpgradePrice = 100.0f;
 
     private List<GameObject> belts = new List<GameObject>();
     private HashSet<GameObject> beltsSpawnedThisAction = new HashSet<GameObject>();

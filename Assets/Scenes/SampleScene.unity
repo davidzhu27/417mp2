@@ -1208,6 +1208,7 @@ MonoBehaviour:
   stepAction: {fileID: -631344258065148156, guid: e0ca4504471ca124088e1e2cfe6804ae, type: 3}
   autoSellerActive: 0
   autoRollSpeed: 1
+  nextUpgradePrice: 100
 --- !u!4 &208773955
 Transform:
   m_ObjectHideFlags: 0
@@ -2537,7 +2538,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'High Level Generator 2
 
-    (Unlocks at 5000 Bucks)'
+    (Unlocks at 50 Bucks)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4904,7 +4905,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 278889094}
         m_TargetAssemblyTypeName: ResourceUIController, Assembly-CSharp
-        m_MethodName: PurchaseDuckBreeder
+        m_MethodName: PurchaseConveyorUpgrade
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5226,7 +5227,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'High Level Generator 1
 
-    (Unlocks at 1000 Bucks)'
+    (Unlocks at 10 Bucks)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5441,7 +5442,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Forbidden Duck Science
+  m_text: 'Forbidden Duck Breeder
 
     (Unlocks at 20 Bucks)'
   m_isRightToLeft: 0
@@ -5715,7 +5716,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Generator Multiplier
 
-    (Unlocks at 200 Bucks)'
+    (Unlocks at 20 Bucks)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5987,7 +5988,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Conveyor Upgrade
 
-    ((Cost: 100 Bucks)'
+    (Unlocks at 100 Bucks)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6126,7 +6127,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'High Level Generator 3
 
-    (Unlocks at 25000 Bucks)'
+    (Unlocks at 250 Bucks)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

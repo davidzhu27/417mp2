@@ -90,7 +90,7 @@ public class ResourceManager : MonoBehaviour
     public int GetNextMultiplierPrice()
     {
         // use an exponential price increase for multipliers
-        return 200 * (int)Mathf.Pow(2, multipliers);
+        return 20 * (int)Mathf.Pow(2, multipliers);
     }
 
     public void PurchaseHLG(int hlgNumber)
@@ -122,11 +122,11 @@ public class ResourceManager : MonoBehaviour
         switch (hlgNumber)
         {
             case 1:
-                return 1000 * (int)Mathf.Pow(2, hlg1);
+                return 10 * (int)Mathf.Pow(2, hlg1);
             case 2:
-                return 5000 * (int)Mathf.Pow(2, hlg2);
+                return 50 * (int)Mathf.Pow(2, hlg2);
             case 3:
-                return 25000 * (int)Mathf.Pow(2, hlg3);
+                return 250 * (int)Mathf.Pow(2, hlg3);
             default:
                 return int.MaxValue;
         }

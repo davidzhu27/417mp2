@@ -78,6 +78,7 @@ public class ResourceUIController : MonoBehaviour
         sb.AppendLine($"Ducks/sec: {ResourceManager.Instance.GetDucksPerSecond():F2}");
         sb.AppendLine($"Generators (+{ResourceManager.Instance.generatorRate}/s): {ResourceManager.Instance.generators}");
         sb.AppendLine($"Multipliers (+{ResourceManager.Instance.multiplierEffect * 100}%): {ResourceManager.Instance.multipliers}");
+        sb.AppendLine($"Conveyor Speed: {conveyorSystem.autoRollSpeed:F2} units/s");
         genInfoText.text = sb.ToString();
     }
 
@@ -135,6 +136,13 @@ public class ResourceUIController : MonoBehaviour
         } else {
             LockButton(hlg3);
         }
+        
+        if (ResourceManager.Instance.bucks >= conveyorSystem.nextUpgradePrice)
+        {
+            UnlockButton(conveyorUpgradeButton);
+        } else {
+            LockButton(conveyorUpgradeButton);
+        }
     }
 
     void InitLockedButton(GameObject buttonObj)
@@ -187,7 +195,7 @@ public class ResourceUIController : MonoBehaviour
         // update duckBreederButton with new price
         var text = duckBreederButton.GetComponentInChildren<TextMeshProUGUI>();
         int nextPrice = ResourceManager.Instance.GetNextGeneratorPrice();
-        text.text = $"Duck Science (Cost: {nextPrice} Ducks)";
+        text.text = $"Duck Breeder (Cost: {nextPrice} Ducks)";
     }
 
     public void PurchaseAutoSeller()
@@ -248,16 +256,16 @@ public class ResourceUIController : MonoBehaviour
 
     public void PurchaseConveyorUpgrade()
     {
-        int currentSpeed = conveyorSystem.autoRollSpeed;
-        int currentPrice = conveyorSystem.nextUpgradePrice;
-        if (currentSpeed < 1) return;
+        float currentSpeed = conveyorSystem.autoRollSpeed;
+        float currentPrice = conveyorSystem.nextUpgradePrice;
+        if (currentSpeed < 1.0f) return;
         if (ResourceManager.Instance.bucks < currentPrice) return;
 
         var text = conveyorUpgradeButton.GetComponentInChildren<TextMeshProUGUI>();
-        conveyorSystem.nextUpgradePrice = currentPrice * 2;
-        conveyorSystem.autoRollSpeed = currentSpeed * 2;
+        conveyorSystem.nextUpgradePrice = currentPrice * 2.0f;
+        conveyorSystem.autoRollSpeed = currentSpeed * 2.0f;
 
-        text.text = $"Conveyor Upgrade\n(Cost: {conveyorSystem.nextUpgradePrice} Bucks)";
-        ResourceManager.Instance.bucks -= currentPrice;
+        text.text = $"Conveyor Upgrade (Cost: {conveyorSystem.nextUpgradePrice} Bucks)";
+        ResourceManager.Instance.bucks = ResourceManager.Instance.bucks - (int)currentPrice;
     }
 }
