@@ -14,6 +14,7 @@ public class ResourceUIController : MonoBehaviour
     public GameObject duckBreederButton;
     public GameObject autoSellerButton;
     public GameObject duckSellingButton;
+    public GameObject conveyorUpgradeButton;
     public GameObject generatorMultiplierButton;
     public GameObject hlg1;
     public GameObject hlg2;
@@ -35,6 +36,7 @@ public class ResourceUIController : MonoBehaviour
         InitLockedButton(duckBreederButton);
         InitLockedButton(autoSellerButton);
         InitLockedButton(duckSellingButton);
+        InitLockedButton(conveyorUpgradeButton);
         InitLockedButton(generatorMultiplierButton);
         InitLockedButton(hlg1);
         InitLockedButton(hlg2);
@@ -242,5 +244,20 @@ public class ResourceUIController : MonoBehaviour
             int nextPrice = ResourceManager.Instance.GetNextHLGPrice(level);
             text.text = $"High Level Generator {level} (Cost: {nextPrice} Bucks)";
         }
+    }
+
+    public void PurchaseConveyorUpgrade()
+    {
+        int currentSpeed = conveyorSystem.autoRollSpeed;
+        int currentPrice = conveyorSystem.nextUpgradePrice;
+        if (currentSpeed < 1) return;
+        if (ResourceManager.Instance.bucks < currentPrice) return;
+
+        var text = conveyorUpgradeButton.GetComponentInChildren<TextMeshProUGUI>();
+        conveyorSystem.nextUpgradePrice = currentPrice * 2;
+        conveyorSystem.autoRollSpeed = currentSpeed * 2;
+
+        text.text = $"Conveyor Upgrade\n(Cost: {conveyorSystem.nextUpgradePrice} Bucks)";
+        ResourceManager.Instance.bucks -= currentPrice;
     }
 }
