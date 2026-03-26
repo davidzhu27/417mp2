@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Text;
+using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 
 public class ResourceUIController : MonoBehaviour
 {
@@ -124,6 +125,7 @@ public class ResourceUIController : MonoBehaviour
 
         if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(1))
         {
+            if (IsButtonLocked(hlg1)) HapticsUtility.SendHapticImpulse(0.7f, 0.25f, HapticsUtility.Controller.Left);
             UnlockButton(hlg1);
         } else {
             LockButton(hlg1);
@@ -131,6 +133,7 @@ public class ResourceUIController : MonoBehaviour
 
         if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(2))
         {
+            if (IsButtonLocked(hlg2)) HapticsUtility.SendHapticImpulse(0.7f, 0.25f, HapticsUtility.Controller.Left);
             UnlockButton(hlg2);
         } else {
             LockButton(hlg2);
@@ -138,6 +141,7 @@ public class ResourceUIController : MonoBehaviour
 
         if (ResourceManager.Instance.bucks >= ResourceManager.Instance.GetNextHLGPrice(3))
         {
+            if (IsButtonLocked(hlg3)) HapticsUtility.SendHapticImpulse(0.7f, 0.25f, HapticsUtility.Controller.Left);
             UnlockButton(hlg3);
         } else {
             LockButton(hlg3);
@@ -188,6 +192,14 @@ public class ResourceUIController : MonoBehaviour
         text.text = text.text.Replace("Unlocks", "Cost");
     }
 
+    bool IsButtonLocked(GameObject buttonObj)
+    {
+        if (buttonObj == null) return true;
+
+        var button = buttonObj.GetComponent<Button>();
+        return !button.interactable;
+    }
+
     // =============================
     // PURCHASE BUTTON CALLBACKS
     // =============================
@@ -230,6 +242,8 @@ public class ResourceUIController : MonoBehaviour
     {
         if (ResourceManager.Instance.generators < 1) return;
         if (ResourceManager.Instance.bucks < ResourceManager.Instance.GetNextMultiplierPrice()) return;
+
+        HapticsUtility.SendHapticImpulse(0.7f, 0.25f, HapticsUtility.Controller.Right);
 
         ResourceManager.Instance.PurchaseMultiplier();
 
