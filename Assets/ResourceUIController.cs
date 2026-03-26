@@ -33,6 +33,7 @@ public class ResourceUIController : MonoBehaviour
 
     [Header("Systems")]
     public ConveyorSystem conveyorSystem;
+    public EyeCoordinator eyeCoordinator;
 
     private bool autoSellerUnlocked = false;
     private bool duckSellingUnlocked = false;
@@ -209,6 +210,7 @@ public class ResourceUIController : MonoBehaviour
         if (ResourceManager.Instance.ducks < ResourceManager.Instance.GetNextGeneratorPrice()) return;
 
         generatorParticle.Play();
+        eyeCoordinator.SurprisedEyes();
 
         ResourceManager.Instance.PurchaseGenerator();
 
