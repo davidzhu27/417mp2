@@ -20,10 +20,11 @@ public class ResourceUIController : MonoBehaviour
     public GameObject hlg2;
     public GameObject hlg3;
 
-    [Header("Unlock particles")]
-    public ParticleSystem hlg1UnlockParticle;
-    public ParticleSystem hlg2UnlockParticle;
-    public ParticleSystem hlg3UnlockParticle;
+    [Header("Particles")]
+    public ParticleSystem hlg1Particle;
+    public ParticleSystem hlg2Particle;
+    public ParticleSystem hlg3Particle;
+    public ParticleSystem generatorParticle;
 
     [Header("Unlock Thresholds")]
     public int autoSellerUnlockCost = 20;
@@ -195,6 +196,8 @@ public class ResourceUIController : MonoBehaviour
     {
         if (ResourceManager.Instance.ducks < ResourceManager.Instance.GetNextGeneratorPrice()) return;
 
+        generatorParticle.Play();
+
         ResourceManager.Instance.PurchaseGenerator();
 
         // update duckBreederButton with new price
@@ -241,9 +244,9 @@ public class ResourceUIController : MonoBehaviour
         int price = ResourceManager.Instance.GetNextHLGPrice(level);
         if (ResourceManager.Instance.bucks < price) return;
 
-        if (level == 1) hlg1UnlockParticle.Play();
-        else if (level == 2) hlg2UnlockParticle.Play();
-        else if (level == 3) hlg3UnlockParticle.Play();
+        if (level == 1) hlg1Particle.Play();
+        else if (level == 2) hlg2Particle.Play();
+        else if (level == 3) hlg3Particle.Play();
 
         ResourceManager.Instance.PurchaseHLG(level);
 
