@@ -23,6 +23,8 @@ public class ResourceManager : MonoBehaviour
     // Existing events (keep for compatibility with existing scripts)
     public System.Action OnDuckCountChanged;
     public System.Action OnBucksChanged;
+    public FeatherBurst featherBurst;
+    public MoneyBurst moneyBurst;
 
     public float GetDucksPerSecond()
     {
@@ -43,7 +45,7 @@ public class ResourceManager : MonoBehaviour
     public void AddDucks(int amount)
     {
         ducks += amount;
-
+        featherBurst.EmitFeathers(amount * 3);
         OnDuckCountChanged?.Invoke();
     }
 
@@ -57,6 +59,7 @@ public class ResourceManager : MonoBehaviour
         OnDuckCountChanged?.Invoke();
 
         bucks += amount;
+        moneyBurst.EmitMoney(amount * 3);
         OnBucksChanged?.Invoke();
     }
 
