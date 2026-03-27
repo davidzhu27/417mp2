@@ -143,6 +143,11 @@ public class ConveyorSystem : MonoBehaviour
             belts.RemoveAt(i);
 
             GameObject newBelt = Instantiate(beltPrefab, spawnPoint.position, spawnPoint.rotation, transform);
+
+SpawnEase ease = newBelt.GetComponent<SpawnEase>();
+if (ease == null)
+    ease = newBelt.AddComponent<SpawnEase>();
+ease.Play();
             ConveyorBeltSlot newSlot = newBelt.GetComponent<ConveyorBeltSlot>();
             if (newSlot != null)
                 newSlot.AutoFill();
@@ -192,20 +197,24 @@ public class ConveyorSystem : MonoBehaviour
     // ===============================
 
     void SpawnInitialBelts()
+{
+    belts.Clear();
+    beltsSpawnedThisAction.Clear();
+
+    for (int i = 0; i < initialBeltCount; i++)
     {
-        belts.Clear();
-        beltsSpawnedThisAction.Clear();
+        Vector3 pos = spawnPoint.position - Vector3.right * beltStepLength * i;
+        GameObject belt = Instantiate(beltPrefab, pos, spawnPoint.rotation, transform);
 
-        for (int i = 0; i < initialBeltCount; i++)
-        {
-            Vector3 pos = spawnPoint.position - Vector3.right * beltStepLength * i;
-            GameObject belt = Instantiate(beltPrefab, pos, spawnPoint.rotation, transform);
+        SpawnEase ease = belt.GetComponent<SpawnEase>();
+        if (ease == null)
+            ease = belt.AddComponent<SpawnEase>();
+        ease.Play();
 
-            ConveyorBeltSlot slot = belt.GetComponent<ConveyorBeltSlot>();
-            if (slot != null)
-                slot.AutoFill();
+        ConveyorBeltSlot slot = belt.GetComponent<ConveyorBeltSlot>();
+        if (slot != null)
+            slot.AutoFill();
 
-            belts.Add(belt);
-        }
+        belts.Add(belt);
     }
 }
