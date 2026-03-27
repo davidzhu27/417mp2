@@ -30,6 +30,9 @@ public class ConveyorSystem : MonoBehaviour
     public float autoRollSpeed = 1.0f; // units per second
     public float nextUpgradePrice = 10.0f;
 
+    [Header("Sounds")]
+    public ConveyorSounds conveyorSounds;
+
     private List<GameObject> belts = new List<GameObject>();
     private HashSet<GameObject> beltsSpawnedThisAction = new HashSet<GameObject>();
     private bool isRolling = false;
@@ -86,6 +89,7 @@ public class ConveyorSystem : MonoBehaviour
     {
         isRolling = true;
         beltsSpawnedThisAction.Clear();
+        conveyorSounds.StartLoop();
 
         float elapsed = 0f;
         while (elapsed < rollDuration)
@@ -100,6 +104,7 @@ public class ConveyorSystem : MonoBehaviour
         }
 
         isRolling = false;
+        conveyorSounds.StopConveyor();
     }
 
     // ===============================
@@ -110,6 +115,8 @@ public class ConveyorSystem : MonoBehaviour
     {
         float despawnX = despawnPoint.position.x;
         Vector3 right = Vector3.right * delta;
+
+        conveyorSounds.StartLoop();
 
         // Move all belts that were not spawned during this action
         foreach (GameObject belt in belts)
@@ -145,6 +152,8 @@ public class ConveyorSystem : MonoBehaviour
 
             TryAutoFillBelts();
         }
+
+        conveyorSounds.StopConveyor();
     }
 
     // ===============================

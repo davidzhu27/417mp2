@@ -238,6 +238,7 @@ public class ResourceUIController : MonoBehaviour
         conveyorSystem.duckSellingUnlocked = true;
 
         duckSellingButton.SetActive(false);
+        conveyorSystem.conveyorSounds.StartConveyor();
     }
 
     public void PurchaseGeneratorMultiplier()
