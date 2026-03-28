@@ -2,11 +2,19 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class ConveyorSystem : MonoBehaviour
 {
     [Header("Unlocking")]
     public bool duckSellingUnlocked = false;
+
+    [Header("Cooldown UI")]
+    public TMP_Text cooldownText;
+
+    [Header("Cooldown")]
+    public float stepCooldown = 1.0f;
+    private bool isOnCooldown = false;
 
     [Header("Belt Setup")]
     public GameObject beltPrefab;
@@ -41,6 +49,9 @@ public class ConveyorSystem : MonoBehaviour
     {
         SpawnInitialBelts();
 
+        if (cooldownText != null)
+            cooldownText.text = "";
+
         stepAction.action.Enable();
         stepAction.action.performed += OnStepPressed;
 
@@ -67,10 +78,31 @@ public class ConveyorSystem : MonoBehaviour
 
     void OnStepPressed(InputAction.CallbackContext ctx)
     {
-        if (!duckSellingUnlocked || autoSellerActive || isRolling)
+        if (!duckSellingUnlocked || autoSellerActive || isRolling || isOnCooldown)
             return;
 
         StartCoroutine(RollConveyorStep());
+        StartCoroutine(StepCooldownRoutine());
+    }
+
+    IEnumerator StepCooldownRoutine()
+    {
+        isOnCooldown = true;
+        float timeLeft = stepCooldown;
+
+        while (timeLeft > 0f)
+        {
+            if (cooldownText != null)
+                cooldownText.text = "Cooldown: " + timeLeft.ToString("F1");
+
+            timeLeft -= Time.deltaTime;
+            yield return null;
+        }
+
+        isOnCooldown = false;
+
+        if (cooldownText != null)
+            cooldownText.text = "Ready!";
     }
 
     IEnumerator RollConveyorStep()
