@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class ConveyorBeltSlot : MonoBehaviour
@@ -7,6 +8,9 @@ public class ConveyorBeltSlot : MonoBehaviour
 
     public Transform duckVisualParent;
     public GameObject duckVisualPrefab;
+
+    [Header("Duck Ease Timing")]
+    public float duckEaseDelay = 2f;
 
     private int duckCount = 0;
     private List<GameObject> duckVisuals = new List<GameObject>();
@@ -44,7 +48,10 @@ public class ConveyorBeltSlot : MonoBehaviour
         duckCount = 0;
 
         foreach (var duck in duckVisuals)
-            Destroy(duck);
+        {
+            if (duck != null)
+                Destroy(duck);
+        }
 
         duckVisuals.Clear();
         return sold;
@@ -59,8 +66,30 @@ public class ConveyorBeltSlot : MonoBehaviour
         {
             GameObject duck = Instantiate(duckVisualPrefab, duckVisualParent);
             duck.transform.localPosition = new Vector3(0f, 0f, 0.15f * duckVisuals.Count);
+
+            SpawnEase ease = duck.GetComponent<SpawnEase>();
+            if (ease == null)
+                ease = duck.AddComponent<SpawnEase>();
+
+            ease.duration = 0.3f;
+            ease.overshootScale = 1.12f;
+
+            StartCoroutine(PlayDuckEaseDelayed(duck, duckEaseDelay));
+
             duckVisuals.Add(duck);
         }
+    }
+
+    IEnumerator PlayDuckEaseDelayed(GameObject duck, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (duck == null)
+            yield break;
+
+        SpawnEase ease = duck.GetComponent<SpawnEase>();
+        if (ease != null)
+            ease.Play();
     }
 
     // =========================

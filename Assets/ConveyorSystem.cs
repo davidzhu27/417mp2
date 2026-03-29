@@ -26,7 +26,7 @@ public class ConveyorSystem : MonoBehaviour
     public Transform despawnPoint;
 
     [Header("Manual Step Animation")]
-    public float rollDuration = 0.4f;
+    public float rollDuration = 1.0f;
 
     [Header("Input")]
     public InputActionReference stepAction;
@@ -35,7 +35,7 @@ public class ConveyorSystem : MonoBehaviour
     public bool autoSellerActive = false;
 
     [Header("Continuous Roll")]
-    public float autoRollSpeed = 1.0f;
+    public float autoRollSpeed = 0.3f;
     public float nextUpgradePrice = 10.0f;
 
     [Header("Sounds")]
