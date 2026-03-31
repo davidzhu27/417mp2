@@ -13,14 +13,18 @@ public class ResourceManager : MonoBehaviour
     public int hlg1 = 0;
     public int hlg2 = 0;
     public int hlg3 = 0;
+
     public float generatorRate = 0.2f;
     public float multiplierEffect = 0.5f;
     public float hlg1Effect = 100f;
     public float hlg2Effect = 500f;
     public float hlg3Effect = 2500f;
+
+    // 新增：给 Surprise Surge 用的总倍率
+    public float surgeMultiplier = 1f;
+
     private float duckAccumulator = 0f;
 
-    // Existing events (keep for compatibility with existing scripts)
     public System.Action OnDuckCountChanged;
     public System.Action OnBucksChanged;
     public FeatherBurst featherBurst;
@@ -31,7 +35,9 @@ public class ResourceManager : MonoBehaviour
         float baseRate = generators * generatorRate;
         float multiplier = 1f + (multipliers * multiplierEffect);
         float hlgBonus = (hlg1 * hlg1Effect) + (hlg2 * hlg2Effect) + (hlg3 * hlg3Effect);
-        return baseRate * multiplier + hlgBonus;
+
+        float totalRate = (baseRate * multiplier + hlgBonus) * surgeMultiplier;
+        return totalRate;
     }
 
     void Awake()
@@ -45,7 +51,10 @@ public class ResourceManager : MonoBehaviour
     public void AddDucks(int amount)
     {
         ducks += amount;
-        featherBurst.EmitFeathers(amount * 3);
+
+        if (featherBurst != null)
+            featherBurst.EmitFeathers(amount * 3);
+
         OnDuckCountChanged?.Invoke();
     }
 
@@ -59,7 +68,10 @@ public class ResourceManager : MonoBehaviour
         OnDuckCountChanged?.Invoke();
 
         bucks += amount;
-        moneyBurst.EmitMoney(amount * 3);
+
+        if (moneyBurst != null)
+            moneyBurst.EmitMoney(amount * 3);
+
         OnBucksChanged?.Invoke();
     }
 
@@ -92,7 +104,6 @@ public class ResourceManager : MonoBehaviour
 
     public int GetNextMultiplierPrice()
     {
-        // use an exponential price increase for multipliers
         return 20 * (int)Mathf.Pow(2, multipliers);
     }
 
@@ -101,6 +112,7 @@ public class ResourceManager : MonoBehaviour
         int price = GetNextHLGPrice(hlgNumber);
         if (bucks < price)
             return;
+
         bucks -= price;
 
         switch (hlgNumber)
@@ -137,16 +149,16 @@ public class ResourceManager : MonoBehaviour
 
     void Update()
     {
-        if (GetDucksPerSecond() <= 0f)
+        float ducksPerSecond = GetDucksPerSecond();
+        if (ducksPerSecond <= 0f)
             return;
 
-        duckAccumulator += GetDucksPerSecond() * Time.deltaTime;
+        duckAccumulator += ducksPerSecond * Time.deltaTime;
 
         if (duckAccumulator >= 1f)
         {
             int toAdd = Mathf.FloorToInt(duckAccumulator);
             duckAccumulator -= toAdd;
-
             AddDucks(toAdd);
         }
     }

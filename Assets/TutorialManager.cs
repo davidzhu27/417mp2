@@ -8,7 +8,7 @@ public class TutorialManager : MonoBehaviour
 
     public void ShowDuckPopup()
     {
-        if (ResourceManager.duckBreedingUnlocked) return; // already progressed
+        if (ResourceManager.ducks > 0) return; // already progressed
 
         duckPopup.SetActive(true);
     }
