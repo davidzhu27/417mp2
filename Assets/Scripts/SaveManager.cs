@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
-    private const string SaveFileName = "save.json";
+    private const string SaveFileName = "save1.json";
     private string SavePath => Path.Combine(Application.persistentDataPath, SaveFileName);
 
     private void Start()
